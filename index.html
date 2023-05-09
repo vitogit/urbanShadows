@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Urban Shadows RPG Generator</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css"
+    />
+    <style>
+      /* Set box-sizing to border-box */
+      *,
+      *:before,
+      *:after {
+        box-sizing: border-box;
+      }
+      .container, .container-fluid {
+        width: 80%;
+      }
+      /* Set body background and font color */
+      body {
+        background-color: #1f1f1f;
+        color: #fff;
+        font-family: sans-serif;
+      }
+
+      /* Set styles for h1 and h2 */
+      h1,
+      h2 {
+        text-align: center;
+        margin: 1rem 0;
+      }
+
+      /* Set styles for the roll button */
+      #roll-button {
+        display: block;
+        margin: 0 auto;
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        font-weight: bold;
+        color: #fff;
+        background-color: #8b0000;
+        border: none;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+      }
+
+      #roll-button:hover {
+        background-color: #b22222;
+      }
+
+      #roll-button:active {
+        background-color: #800000;
+      }
+
+      /* Set styles for the table */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 2rem auto;
+        table-layout: fixed;
+      }
+
+      th,
+      td {
+        width: 30%;
+        padding: 0.5rem;
+        text-align: left;
+        border-bottom: 1px solid #444;
+      }
+      td::first-letter {
+        text-transform: uppercase;
+      }
+      th {
+        font-weight: bold;
+      }
+
+      /* Set styles for table rows */
+      tr {
+        background-color: #1a1a1a;
+      }
+
+      tr:nth-child(even) {
+        background-color: #222;
+      }
+
+      /* Set styles for table cells */
+      td {
+        vertical-align: middle;
+      }
+
+      /* Set styles for the dice section */
+      #dice-section {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 2rem;
+      }
+
+      #dice-section div {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 3rem;
+        height: 3rem;
+        margin: 0 0.5rem;
+        font-size: 2rem;
+        font-weight: bold;
+        color: #fff;
+        background-color: #444;
+        border-radius: 0.25rem;
+        transition: all 0.2s ease-in-out;
+      }
+
+      #dice-section div:hover {
+        background-color: #555;
+        cursor: pointer;
+      }
+
+      #dice-section div:active {
+        transform: scale(0.95);
+      }
+
+      #dice-section .dice-red {
+        color: #dc143c;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="container-fluid">
+      <div class="grid">
+          <div class="card">
+            <div class="card-header">
+              <h4 class="card-title">Story Element Generator</h4>
+            </div>
+            <div class="card-body">
+              <table class="table">
+                <tbody>
+                  <tr>
+                    <td>Roll</td>
+                    <td id="dice"></td>
+                  </tr>
+                  <tr>
+                    <td>Verb</td>
+                    <td id="verb"></td>
+                  </tr>
+                  <tr>
+                    <td>subject</td>
+                    <td id="subject"></td>
+                  </tr>
+                  <tr>
+                    <td>Adjective</td>
+                    <td id="adjective"></td>
+                  </tr>
+                  <tr>
+                    <td>Location</td>
+                    <td id="location"></td>
+                  </tr>
+
+                  <tr>
+                    <td>Focus</td>
+                    <td id="focus"></td>
+                  </tr>
+                  <tr>
+                    <td>MC Move</td>
+                    <td id="move"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h4 class="card-title">Character Generator</h4>
+            </div>
+            <div class="card-body">
+              <table class="table">
+                <tbody>
+                  <tr>
+                    <td>Name</td>
+                    <td id="name"></td>
+                  </tr>
+                  <tr>
+                    <td>Status</td>
+                    <td id="status"></td>
+                  </tr>
+                  <tr>
+                    <td>Appearance</td>
+                    <td id="appearance"></td>
+                  </tr>
+                  <tr>
+                    <td>Disposition</td>
+                    <td id="animosity"></td>
+                  </tr>
+                  <tr>
+                    <td>Quirks</td>
+                    <td id="quirks"></td>
+                  </tr>
+                  <tr>
+                    <td>Race</td>
+                    <td id="race"></td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="text-center">
+                <button id="roll-button" class="btn btn-primary mt-2">
+                  Roll
+                </button>
+              </div>
+            </div>
+          </div>
+      </div>
+    </main>
+    <script>
+      const subjects = [
+        'nature',
+        'technology',
+        'reality',
+        'betrayal',
+        'past trauma',
+        'artifact',
+        'time',
+        'moral dilemma', "Objective", "Territory", "Reality", "Ally", "Enemy", "Evil", "Good", "War", "Peace", "Innocent", "Mind", "Spirit", "Physical", "Ideas", "Message", "Energy", "Project", "Plans", "Business", "Paths", "Competition", "Attention", "Journey", "Home", "Tactics", "Strategies", "Luck", "Power", "Wounds", "The strange", "The hidden", "Freedom", "The common", "The masses", "Weapons", "Danger", "Climate"]
+      
+      const adjectives = [
+        "Bored", "Happy", "Tall", "Short", "Clear", "Dark", "Hot", "Cold", "Good",
+        "Bad", "Hard", "Soft", "Strong", "Weak", "Easy", "Difficult", "Exterior",
+        "Interior", "False", "Fresh", "Big", "Small", "Wet", "Dry", "Impossible",
+        "Useful", "Useless", "Young", "Old", "Ancient", "Slow", "Fast", "Massive",
+        "Tiny", "Alive", "Dead", "Natural", "Poor", "Rich", "Poverty", "Rare",
+        "Strange", "Real", "Bright", "Pale", "Healthy", "Sick", "Corrupt", "Isolated",
+        "Sad", "Desolate", "Green", "Abnormal", "Abandoned", "Colossal", "Hidden",
+        "Sinister", "Concealed", "Complex", "Simple", "Ruined", "Broken", "Desolate",
+        "Disgusting", "Calm", "Open", "Beautiful", "Dirty", "Clean", "Classic",
+        "Creepy", "Normal", "Delicate", "Unpleasant", "Empty", "Exotic", "Familiar",
+        "Historic", "Horrible", "Valuable", "Important", "Powerful", "Fun", "Aromatic",
+        "Bright", "Macabre", "Glorious", "Dangerous", "Peaceful", "Aggressive", "Calm",
+        "Festive", "Eternal", "Majestic", "Imposing", 'abandoned', 'abnormal',
+        'amusing', 'ancient', 'bewildering', 'boring', 'calm', 'chaotic', 'cheap',
+        'clumsy', 'creepy', 'crowded', 'dangerous', 'delightful', 'dreadful', 'empty',
+        'enchanting', 'expensive', 'familiar', 'fascinating', 'ghastly', 'gorgeous',
+        'hideous', 'horrific', 'majestic', 'modern', 'mysterious', 'mysterious',
+        'normal', 'occupied', 'ominous', 'ordinary', 'peaceful', 'spectacular',
+        'terrifying', 'unremarkable', 'wondrous'
+      ]
+
+      const verbs = [
+        "Stop", "Help", "Lie", "Inform", "Free", "Retain", "Develop", "Betray", "Steal",
+        "Divide", "Open", "Close", "Control", "Fail", "Change", 'assist', 'attack',
+        "Decrease", "Abandon", "Ask", "Move", "Trust", "Distrust", "Separate", "Break",
+        'transform', 'travel',
+        'return', 'reveal', 'search', 'seduce', 'sneak', 'steal', 'summon', 'take',
+        'manipulate', 'observe', 'persuade', 'pursue', 'release', 'rescue', 'retreat',
+        'give', 'ignore', 'imprison', 'interrogate', 'intimidate', 'investigate',
+        'defend', 'destroy', 'discover', 'escape', 'escape', 'explore', 'expose',
+        'betray', 'command', 'compel', 'conceal', 'confront', 'create', 'deceive',
+        "Obtain", "Start", "Fight", "Win", "Defend", "Communicate", "Increase",
+      ]
+
+      const locations = [
+        'dark alley',
+        'bright street',
+        'haunted mansion',
+        'modern apartment',
+        'quiet park',
+        'crowded marketplace',
+        'seedy bar',
+        'underground hideout',
+        'opulent casino',
+        'ancient temple',
+        'desolate wasteland',
+        'majestic palace',
+        'ethereal plane',
+        'grimy sewer',
+        'luxurious penthouse',
+        'enchanted forest',
+        'gothic cathedral',
+        'abandoned factory',
+        'suburban neighborhood',
+        'underwater ruins',
+        'abandoned building', 'haunted house', 'sewer system', 'underground bunker', 'graveyard', 'old church', 'museum', 'theater', 'amusement park', 'arcade', 'nightclub', 'casino', 'hotel', 'junkyard', 'skyscraper rooftop', 'construction site', 'abandoned subway station', 'beach boardwalk', 'cornfield', 'forest cabin', 'deserted beach', 'power plant', 'warehouse district', 'zoo', 'amusement pier', 'abandoned mine', 'airport', 'docks', 'cemetery', 'lighthouse', 'old mansion', 'ruined castle', 'swamp', 'theme park', 'suburban neighborhood', 'abandoned amusement park'];
+
+      const focuses = [
+        'positive for player',
+        'negative for player',
+        'positive for NPC',
+        'negative for NPC',
+        'new NPC',
+        'advance thread',
+        'obstacule to thread',
+        'color detail'
+      ]
+
+      const statusOptions = [
+        'high',
+        'low',
+        'mighty',
+        'weak',
+        'successful',
+        'failed',
+        'dominant',
+        'submissive',
+        'victorious',
+        'defeated',
+        'courageous',
+        'timid',
+        'heroic',
+        'villainous',
+        'loyal',
+        'treacherous'
+      ]
+
+      const appearanceOptions = [
+        'attractive',
+        'repulsive',
+        'scary',
+        'comforting',
+        'elegant',
+        'grungy',
+        'imposing',
+        'unimpressive',
+        'gorgeous',
+        'hideous',
+        'charming',
+        'repelling',
+        'mysterious',
+        'familiar',
+        'imposing',
+        'insignificant',
+        'dazzling',
+        'dull',
+        'impressive',
+        'forgettable'
+      ]
+
+      const animosityOptions = [
+        'friendly',
+        'hostile',
+        'neutral',
+        'loving',
+        'hateful',
+        'trustful',
+        'suspicious',
+        'kind',
+        'mean',
+        'calm',
+        'angry',
+        'sympathetic',
+        'antagonistic',
+        'loyal',
+        'treacherous',
+        'respectful',
+        'disrespectful',
+        'supportive',
+        'unsupportive',
+        'forgiving',
+        'vindictive'
+      ]
+
+      const quirksOptions = [
+        'fidgets nervously',
+        'stands completely still',
+        'talks to self',
+        'avoids eye contact',
+        'has a stutter',
+        'speaks with confidence',
+        'sneezes often',
+        'never sneezes',
+        'laughs at inappropriate times',
+        'has an intense gaze',
+        'twirls their hair',
+        'avoids physical contact',
+        'is a compulsive liar',
+        'always tells the truth',
+        'uses excessive hand gestures',
+        'is extremely stoic',
+        'has a photographic memory',
+        "can't remember names",
+        'is always early',
+        'is always late'
+      ]
+
+      const moves = [
+        "Surface a conflict, ancient or modern.",
+        "Put someone in danger.",
+        "Inflict (or trade) harm.",
+        "Inflict corruption.",
+        "Offer an opportunity with a cost.",
+        "Reveal a deal done in their absence.",
+        "Turn a move back on them.",
+        "Offer or claim a Debt owed.",
+        "Shift the odds, suddenly or magically.",
+        "Warn someone of impending danger.",
+        "Lock down, exploit, or claim a place of power.",
+        "Tell the consequences and ask.",
+        "Activate their stuff’s downside.",
+      ];
+      const races = ['human', 'vampire', 'wizard', 'wolf']
+      const names = ['Oliver', 'Charlotte', 'William', 'Sophia', 'Henry', 'Emma', 'Ethan', 'Ava', 'James', 'Mia', 'Benjamin', 'Isabella', 'Alexander', 'Amelia', 'Jacob', 'Harper', 'Michael', 'Evelyn', 'Elijah', 'Abigail', 'Daniel', 'Emily', 'Matthew', 'Elizabeth', 'Aiden', 'Avery', 'Luke', 'Ella', 'Mason', 'Scarlett', 'Logan', 'Grace', 'Caleb', 'Chloe', 'Lucas', 'Victoria', 'Noah', 'Lily', 'Dylan', 'Lila'];
+      const surnames = ['Smith', 'Johnson', 'Williams', 'Jones', 'Brown', 'Davis', 'Miller', 'Wilson', 'Moore', 'Taylor', 'Anderson', 'Thomas', 'Jackson', 'White', 'Harris', 'Martin', 'Thompson', 'Garcia', 'Martinez', 'Robinson', 'Clark', 'Rodriguez', 'Lewis', 'Lee', 'Walker', 'Hall', 'Allen', 'Young', 'King', 'Wright', 'Scott', 'Green', 'Baker', 'Adams', 'Nelson', 'Carter', 'Mitchell', 'Perez', 'Roberts', 'Turner'];
+      const nicknames = [ 'Whiskerface', 'Sparky', 'Jester', 'Ziggy', 'Spellchecker', "The Fang", "Silverclaw", "Midnight", "The Shadow", "Bloodletter", "Bonecrusher", "The Necromancer", "The Cursed", "The Forsaken", "The Enigma", "The Occultist", "Nightshade", "The Dark One", "The Harbinger", "The Revenant", "The Lycan", "The Witch Doctor", 'Sillypants', "The Bloodhound", "The Black Cat", "The Demon", "The Phantom", "The Sorcerer", "The Butcher", "The Reaper", "The Banshee", "The Voodoo Queen", "The Death Dealer", "The Alchemist", "Ghost Whisperer" ];
+
+      function getRandomElement(arr) {
+        return arr[Math.floor(Math.random() * arr.length)]
+      }
+
+      function generateStoryElement() {
+        document.getElementById('adjective').textContent = `${getRandomElement(adjectives)}, ${getRandomElement(adjectives)}`
+        document.getElementById('verb').textContent = getRandomElement(verbs)
+        document.getElementById('location').textContent = getRandomElement(locations)
+        document.getElementById('subject').textContent =  getRandomElement(subjects)
+        document.getElementById('focus').textContent =  getRandomElement(focuses)
+      }
+
+      function generateCharacter() {
+        const name = getRandomElement(names)
+        const surname = getRandomElement(surnames)
+        const nickname = getRandomElement(nicknames)
+        const status = getRandomElement(statusOptions)
+        const appearance = getRandomElement(appearanceOptions)
+        const animosity = getRandomElement(animosityOptions)
+        const quirks = getRandomElement(quirksOptions)
+        const race = getRandomElement(races)
+
+        document.getElementById('name').textContent = `${name} ${surname} (${nickname})`
+        document.getElementById('status').textContent = status
+        document.getElementById('appearance').textContent = appearance
+        document.getElementById('animosity').textContent = animosity
+        document.getElementById('quirks').textContent = quirks
+        document.getElementById('race').textContent = race
+      }
+
+      function rollDice() {
+        const dice1 = Math.floor(Math.random() * 6) + 1
+        const dice2 = Math.floor(Math.random() * 6) + 1
+        const total = dice1 + dice2
+        console.log('dice', dice1, dice2, total)
+
+        var diceElement = document.getElementById('dice');
+
+        let diceResult = `[ ${dice1}, ${dice2} ] = ${total}`
+        if (dice1 === dice2) {
+          diceResult = diceResult + ' (DOUBLES!)'
+        }
+        if (total <= 6) {
+          diceElement.style.color = 'red';
+        } else if (total >= 10) {
+          diceElement.style.color = '#65f765';
+        } else if (total >= 12) {
+          diceElement.style.color = 'yellow';
+        } else {
+          diceElement.style.color = '#fff';
+        }
+
+        diceElement.textContent = diceResult
+      }
+
+      function generateMove() {
+        const move = getRandomElement(moves)
+        document.getElementById('move').textContent = move
+      }
+
+      document.getElementById('roll-button').addEventListener('click', () => {
+        generateStoryElement()
+        generateCharacter()
+        rollDice()
+        generateMove()
+      })
+      window.onload = function() {
+        document.getElementById('roll-button').click()
+      }
+    </script>
+  </body>
+</html>
